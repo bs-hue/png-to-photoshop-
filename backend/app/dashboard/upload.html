@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PNG to PSD Converter - AI Layer Decomposer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Mukta:wght@400;500;600;700;800&family=Khand:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=2" />
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="top-nav">
+    <div class="container nav-container">
+      <div class="nav-left">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <span class="brand-name">PNG to PSD Converter</span>
+      </div>
+      <nav class="nav-right">
+        <a href="#how-it-works" class="nav-link">How It Works</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#help" class="nav-link">Help</a>
+        <button class="primary-btn nav-btn" id="convertNowNavBtn">Convert Now</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Funky / Reassuring Welcome Banner -->
+  <section class="welcome-banner">
+    <p class="welcome-text">Ready to make your first PSD? Don't worry, we are here for you!</p>
+  </section>
+
+  <main class="container">
+    <!-- Hero Section -->
+    <section class="hero" id="features">
+      <div class="hero-left">
+        <h1 class="hero-heading">
+          Turn Your PNG Into an
+          <span class="orange-line">Editable PSD</span>
+        </h1>
+        <p class="hero-description">Upload your PNG image and convert it into a layered Photoshop document in just a few clicks.</p>
+        
+        <div class="features">
+          <div class="feature-item">
+            <span class="feature-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="3" y1="9" x2="21" y2="9"></line>
+                <line x1="9" y1="21" x2="9" y2="9"></line>
+              </svg>
+            </span>
+            <span>Layered PSD</span>
+          </div>
+          <div class="vertical-sep"></div>
+          <div class="feature-item">
+            <span class="feature-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </span>
+            <span>Fast &amp; Accurate</span>
+          </div>
+          <div class="vertical-sep"></div>
+          <div class="feature-item">
+            <span class="feature-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </span>
+            <span>100% Secure</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column Visual Illustration -->
+      <div class="hero-right">
+        <div class="illustration-container">
+          <div class="png-card">
+            <div class="png-checkerboard">
+              <!-- Crisp vector flower graphic -->
+              <svg class="flower-icon" viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="20" r="10" fill="#F36B0A" opacity="0.9"/>
+                <circle cx="44" cy="32" r="10" fill="#F36B0A" opacity="0.9"/>
+                <circle cx="32" cy="44" r="10" fill="#F36B0A" opacity="0.9"/>
+                <circle cx="20" cy="32" r="10" fill="#F36B0A" opacity="0.9"/>
+                <circle cx="32" cy="32" r="7" fill="#FFA500"/>
+              </svg>
+            </div>
+            <div class="card-label">image.png</div>
+          </div>
+
+          <div class="arrow-divider">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </div>
+
+          <div class="psd-card">
+            <div class="psd-header">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              <span>document.psd</span>
+            </div>
+            <div class="psd-layers">
+              <div class="psd-layer-row active">
+                <span class="layer-bullet"></span>
+                <span>Layer 1 (Subject)</span>
+              </div>
+              <div class="psd-layer-row">
+                <span class="layer-bullet"></span>
+                <span>Layer 2 (Text)</span>
+              </div>
+              <div class="psd-layer-row">
+                <span class="layer-bullet"></span>
+                <span>Background</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Upload Section -->
+    <section class="upload-section" id="uploadSection">
+      <div class="upload-card">
+        <div class="upload-icon-wrapper">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+        </div>
+        <h2 class="upload-heading">Upload Your PNG Image</h2>
+        <p class="upload-subtext">Drag and drop your PNG file here, or click below to browse your computer.</p>
+        
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="pngFile" accept="image/png" hidden />
+          <button id="browseBtn" class="primary-btn browse-btn" type="button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Browse Files
+          </button>
+          <p class="helper-text">Supported format: PNG (Max 10 MB)</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Uploaded File Preview -->
+    <section class="file-preview hidden" id="filePreviewSection">
+      <h3 class="preview-heading">Your Uploaded File</h3>
+      <div class="preview-grid">
+        <div class="preview-thumb-box">
+          <img id="previewThumbnail" src="" alt="Thumbnail preview" />
+        </div>
+        <div class="preview-details-list" id="previewDetailsList">
+          <!-- Filled dynamically via JS -->
+        </div>
+      </div>
+      <div class="preview-footer">
+        <p class="preview-helper">Your image is ready for conversion.</p>
+        <div class="preview-actions">
+          <button id="removeBtn" class="secondary-btn" type="button">Remove File</button>
+          <button id="replaceBtn" class="secondary-btn" type="button">Replace File</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Conversion Action Button -->
+    <section class="conversion-section hidden" id="conversionSection">
+      <button id="convertBtn" class="primary-btn convert-action-btn" type="button">
+        Convert to PSD
+      </button>
+      <p class="conversion-support">Your image will be processed and prepared for download.</p>
+    </section>
+
+    <!-- Loading State -->
+    <section class="loading-section hidden" id="loadingSection">
+      <div class="spinner"></div>
+      <p class="loading-state">Converting your image... Please wait.</p>
+      <p class="loading-additional">This usually takes a few seconds.</p>
+    </section>
+
+    <!-- Success State -->
+    <section class="success-section hidden" id="successSection">
+      <div class="success-icon-badge">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h3 class="success-heading">Your PSD Is Ready!</h3>
+      <p class="success-description">Your image has been successfully converted into an editable Photoshop document.</p>
+      <div class="success-actions">
+        <button id="downloadBtn" class="primary-btn download-btn" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Download PSD
+        </button>
+        <button id="convertAnotherBtn" class="secondary-btn" type="button">Convert Another Image</button>
+      </div>
+
+      <!-- Extracted Layers & Matched Typography Breakdown -->
+      <div class="extracted-layers-card" id="extractedLayersCard">
+        <div class="extracted-header">
+          <h4 class="extracted-title">Extracted Layers & Matched Typography</h4>
+          <span class="layer-count-badge" id="layerCountBadge">0 Layers Extracted</span>
+        </div>
+        <div class="extracted-layers-grid" id="extractedLayersGrid"></div>
+      </div>
+
+      <p class="success-support">Your converted file is ready to use in Adobe Photoshop with native editable text layers.</p>
+    </section>
+
+    <!-- Error State -->
+    <section class="error-section hidden" id="errorSection">
+      <p class="error-message" id="errorMessage"></p>
+      <button id="retryBtn" class="primary-btn" type="button">Try Again</button>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+      <h2 class="section-title">How It Works</h2>
+      <div class="steps">
+        <div class="step-item">
+          <div class="step-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <h3 class="step-title">1. Upload</h3>
+          <p class="step-desc">Select a PNG image from your computer or drag and drop it into the upload box.</p>
+        </div>
+
+        <div class="step-arrow">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+
+        <div class="step-item">
+          <div class="step-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </div>
+          <h3 class="step-title">2. Convert</h3>
+          <p class="step-desc">Our intelligent pipeline detects text, foreground objects, and reconstructs clean layers.</p>
+        </div>
+
+        <div class="step-arrow">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+
+        <div class="step-item">
+          <div class="step-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </div>
+          <h3 class="step-title">3. Download</h3>
+          <p class="step-desc">Get your layered Photoshop document and open it directly in Adobe Photoshop.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="help">
+      <p class="footer-text">PNG to PSD Converter &nbsp;&middot;&nbsp; Simple image conversion, made easy.</p>
+      <p class="footer-support">Built for a faster creative workflow &nbsp;&middot;&nbsp; Backend ready at 127.0.0.1:8000</p>
+    </footer>
+  </main>
+
+  <script>
+    const bytesToSize = (bytes) => {
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      if (bytes === 0) return '0 Bytes';
+      const i = Math.floor(Math.log(bytes) / Math.log(1024));
+      return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+    };
+
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('pngFile');
+    const browseBtn = document.getElementById('browseBtn');
+    const removeBtn = document.getElementById('removeBtn');
+    const replaceBtn = document.getElementById('replaceBtn');
+    const convertBtn = document.getElementById('convertBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const convertAnotherBtn = document.getElementById('convertAnotherBtn');
+    const retryBtn = document.getElementById('retryBtn');
+    const convertNowNavBtn = document.getElementById('convertNowNavBtn');
+    
+    const previewSection = document.getElementById('filePreviewSection');
+    const previewDetailsList = document.getElementById('previewDetailsList');
+    const previewThumbnail = document.getElementById('previewThumbnail');
+    const conversionSection = document.getElementById('conversionSection');
+    const loadingSection = document.getElementById('loadingSection');
+    const successSection = document.getElementById('successSection');
+    const errorSection = document.getElementById('errorSection');
+    const errorMessageEl = document.getElementById('errorMessage');
+    const uploadArea = document.getElementById('uploadSection');
+
+    let currentFile = null;
+    let psdUrl = '';
+
+    browseBtn.addEventListener('click', () => fileInput.click());
+    if (convertNowNavBtn) {
+      convertNowNavBtn.addEventListener('click', () => {
+        if (!currentFile) {
+          fileInput.click();
+        } else {
+          convertBtn.click();
+        }
+      });
+    }
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) handleFile(e.target.files[0]);
+    });
+
+    ['dragenter', 'dragover'].forEach(evt => {
+      dropZone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.add('drag-over');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(evt => {
+      dropZone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('drag-over');
+      });
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+
+    function handleFile(file) {
+      if (file.type !== 'image/png') {
+        showError('Please upload a valid PNG file.');
+        return;
+      }
+      const maxSize = 10 * 1024 * 1024; // 10 MB
+      if (file.size > maxSize) {
+        showError('Your file exceeds the maximum supported size (10 MB).');
+        return;
+      }
+      currentFile = file;
+      renderPreview(file);
+      uploadArea.classList.add('hidden');
+      previewSection.classList.remove('hidden');
+      conversionSection.classList.remove('hidden');
+      convertBtn.disabled = false;
+      errorSection.classList.add('hidden');
+    }
+
+    function renderPreview(file) {
+      const url = URL.createObjectURL(file);
+      previewThumbnail.src = url;
+      const img = new Image();
+      img.onload = () => {
+        previewDetailsList.innerHTML = `
+          <div class="detail-item">
+            <div class="detail-label">File Name</div>
+            <div class="detail-val" title="${file.name}">${file.name}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">File Size</div>
+            <div class="detail-val">${bytesToSize(file.size)}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Dimensions</div>
+            <div class="detail-val">${img.width} &times; ${img.height} px</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Format</div>
+            <div class="detail-val">PNG</div>
+          </div>
+        `;
+      };
+      img.src = url;
+    }
+
+    removeBtn.addEventListener('click', resetAll);
+    replaceBtn.addEventListener('click', () => {
+      fileInput.value = '';
+      fileInput.click();
+    });
+
+    convertBtn.addEventListener('click', async () => {
+      if (!currentFile) {
+        showError('Please select a PNG image before converting.');
+        return;
+      }
+      conversionSection.classList.add('hidden');
+      loadingSection.classList.remove('hidden');
+      errorSection.classList.add('hidden');
+
+      try {
+        const fd = new FormData();
+        fd.append('file', currentFile);
+        const resp = await fetch(window.location.origin + '/api/v1/decompose-png', {
+          method: 'POST',
+          body: fd
+        });
+
+        if (!resp.ok) {
+          const txt = await resp.text();
+          throw new Error(txt || 'Conversion Failed');
+        }
+
+        const data = await resp.json();
+        psdUrl = data.psd_url;
+        renderExtractedLayers(data);
+        loadingSection.classList.add('hidden');
+        successSection.classList.remove('hidden');
+        previewSection.classList.add('hidden');
+      } catch (e) {
+        loadingSection.classList.add('hidden');
+        const msg = e.message.includes('400') ? 'Please upload a valid PNG file.' :
+                    e.message.includes('413') ? 'Your file exceeds the maximum supported size.' :
+                    e.message.includes('500') ? "We're unable to process your request right now. Please try again later." :
+                    'Something went wrong during conversion. Please try again.';
+        showError(msg);
+      }
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      if (psdUrl) window.open(psdUrl, '_blank');
+    });
+
+    convertAnotherBtn.addEventListener('click', resetAll);
+
+    retryBtn.addEventListener('click', () => {
+      errorSection.classList.add('hidden');
+      if (currentFile) {
+        convertBtn.click();
+      }
+    });
+
+    function renderExtractedLayers(data) {
+      const grid = document.getElementById('extractedLayersGrid');
+      const badge = document.getElementById('layerCountBadge');
+      if (!grid) return;
+      grid.innerHTML = '';
+      const layers = data.layers || [];
+      badge.textContent = `${layers.length} Layers Extracted`;
+
+      layers.forEach((layer) => {
+        const item = document.createElement('div');
+        item.className = 'layer-row-card';
+
+        if (layer.type === 'text' && layer.text) {
+          const t = layer.text;
+          const fontName = t.font_family || 'Poppins-Regular';
+          let displayFont = 'Poppins, sans-serif';
+          if (/playfair/i.test(fontName)) displayFont = "'Playfair Display', serif";
+          else if (/montserrat/i.test(fontName)) displayFont = "'Montserrat', sans-serif";
+          else if (/mukta/i.test(fontName)) displayFont = "'Mukta', sans-serif";
+          else if (/khand/i.test(fontName)) displayFont = "'Khand', sans-serif";
+          else if (/impact/i.test(fontName)) displayFont = 'Impact, sans-serif';
+
+          const isBlack = /black|extrabold/i.test(fontName);
+          const isBold = /bold/i.test(fontName) || isBlack;
+          const isSemiBold = /semibold/i.test(fontName);
+          const isMedium = /medium/i.test(fontName);
+          const isItalic = /italic/i.test(fontName);
+          const weight = isBlack ? '900' : (isBold ? '700' : (isSemiBold ? '600' : (isMedium ? '500' : '400')));
+          const style = isItalic ? 'italic' : 'normal';
+
+          item.innerHTML = `
+            <div class="layer-meta-top">
+              <span class="type-pill text-pill">Editable Text</span>
+              <span class="font-tag" title="Matched Font Family">${fontName}</span>
+              <span class="layer-size-pill">${t.font_size_px}px</span>
+              <span class="color-swatch-pill" style="background:${t.color_hex}" title="${t.color_hex}"></span>
+            </div>
+            <div class="layer-text-preview" style="font-family:${displayFont}; font-weight:${weight}; font-style:${style}; color:${t.color_hex}">
+              ${escapeHtml(t.content)}
+            </div>
+          `;
+        } else if (layer.type === 'object') {
+          item.innerHTML = `
+            <div class="layer-meta-top">
+              <span class="type-pill object-pill">Isolated Object</span>
+              <span class="font-tag">${layer.name}</span>
+            </div>
+            <div class="layer-desc">Foreground subject cutout (${layer.bounds.width}&times;${layer.bounds.height}px)</div>
+          `;
+        } else if (layer.type === 'shape') {
+          item.innerHTML = `
+            <div class="layer-meta-top">
+              <span class="type-pill shape-pill">Vector Shape / Badge</span>
+              <span class="font-tag">${layer.name}</span>
+            </div>
+            <div class="layer-desc">Crisp vector container / CTA badge</div>
+          `;
+        } else if (layer.type === 'background') {
+          item.innerHTML = `
+            <div class="layer-meta-top">
+              <span class="type-pill bg-pill">Clean Background</span>
+              <span class="font-tag">Inpainted Plate</span>
+            </div>
+            <div class="layer-desc">100% clean background with text & subjects removed</div>
+          `;
+        } else {
+          return;
+        }
+        grid.appendChild(item);
+      });
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function showError(message) {
+      errorMessageEl.textContent = message;
+      errorSection.classList.remove('hidden');
+      loadingSection.classList.add('hidden');
+      conversionSection.classList.add('hidden');
+      previewSection.classList.add('hidden');
+      uploadArea.classList.remove('hidden');
+    }
+
+    function resetAll() {
+      currentFile = null;
+      psdUrl = '';
+      fileInput.value = '';
+      previewThumbnail.src = '';
+      previewSection.classList.add('hidden');
+      conversionSection.classList.add('hidden');
+      loadingSection.classList.add('hidden');
+      successSection.classList.add('hidden');
+      errorSection.classList.add('hidden');
+      uploadArea.classList.remove('hidden');
+      convertBtn.disabled = true;
+    }
+  </script>
+</body>
+</html>

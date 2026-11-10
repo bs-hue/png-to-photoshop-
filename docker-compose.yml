@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  decomposer-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: png-layer-decomposer
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DECOMPOSER_OCR_ENGINE=easyocr
+      - DECOMPOSER_OCR_LANG=hi,en
+      - DECOMPOSER_INPAINT_ENGINE=lama
+      - DECOMPOSER_SEGMENTATION_ENGINE=yunet
+      - DECOMPOSER_PSD_ENGINE=ag-psd
+      - DECOMPOSER_MAX_IMAGE_SIDE=4096
+      - DECOMPOSER_MAX_UPLOAD_MB=64
+    volumes:
+      - decomposer-outputs:/app/outputs
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/v1/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  decomposer-outputs:

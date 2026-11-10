@@ -1,0 +1,118 @@
+/* UXP supports a pragmatic subset of CSS: flexbox, variables, basic selectors. */
+:root {
+  --fg: var(--uxp-host-text-color, #e6e6e6);
+  --muted: var(--uxp-host-text-color-secondary, #9a9a9a);
+  --border: var(--uxp-host-border-color, #4a4a4a);
+  --accent: #2d9bf0;
+  --ok: #2fbf71;
+  --warn: #e8a33d;
+  --err: #e5484d;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: var(--fg);
+  font-size: var(--uxp-host-font-size, 12px);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  margin: 6px 0;
+}
+
+.section--grow {
+  flex-grow: 1;
+  min-height: 140px;
+}
+
+.section sp-button {
+  margin-top: 6px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.grow {
+  flex-grow: 1;
+  margin-right: 6px;
+}
+
+.muted {
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: var(--muted);
+}
+.dot--ok { background-color: var(--ok); }
+.dot--err { background-color: var(--err); }
+.dot--unknown { background-color: var(--muted); }
+
+.progress-head {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress {
+  height: 8px;
+  margin-top: 4px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.progress__fill {
+  height: 100%;
+  width: 0%;
+  background-color: var(--accent);
+}
+.progress__fill--ok { background-color: var(--ok); }
+.progress__fill--err { background-color: var(--err); }
+
+.log {
+  flex-grow: 1;
+  margin-top: 4px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow-y: auto;
+  min-height: 120px;
+  max-height: 320px;
+  font-family: Consolas, Menlo, monospace;
+  font-size: 10px;
+}
+
+.log__line { margin: 1px 0; white-space: pre-wrap; }
+.log__line--info { color: var(--fg); }
+.log__line--ok { color: var(--ok); }
+.log__line--warn { color: var(--warn); }
+.log__line--err { color: var(--err); }
+.log__time { color: var(--muted); }
+

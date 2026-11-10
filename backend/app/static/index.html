@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PNG → Photoshop Layers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Mukta:wght@400;500;600;700;800&family=Khand:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #1a1a2e; --surface: #16213e; --card: #0f3460;
+    --accent: #e94560; --accent2: #2d9bf0; --text: #eaeaea;
+    --muted: #8892a4; --ok: #2fbf71; --warn: #e8a33d; --err: #e5484d;
+    --border: #2a3a5c; --radius: 12px;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 32px; display: flex; align-items: center; gap: 14px; }
+  header .logo { font-size: 22px; font-weight: 700; background: linear-gradient(90deg,var(--accent2),var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  header .sub { color: var(--muted); font-size: 13px; }
+  .status-dot { width:10px; height:10px; border-radius:50%; background:var(--muted); margin-left:auto; }
+  .status-dot.ok { background:var(--ok); box-shadow:0 0 6px var(--ok); }
+  .status-dot.err { background:var(--err); box-shadow:0 0 6px var(--err); }
+  .status-label { font-size:12px; color:var(--muted); }
+
+  main { max-width: 860px; margin: 40px auto; padding: 0 20px; }
+
+  .drop-zone {
+    border: 2px dashed var(--border); border-radius: var(--radius);
+    padding: 60px 40px; text-align: center; cursor: pointer;
+    transition: all .2s; background: var(--surface); position: relative;
+  }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent2); background: #1a2a4a; }
+  .drop-zone input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+  .drop-icon { font-size:52px; margin-bottom:12px; }
+  .drop-title { font-size:18px; font-weight:600; margin-bottom:6px; }
+  .drop-sub { color:var(--muted); font-size:13px; }
+
+  .preview-area { margin-top:20px; display:none; }
+  .preview-area img { max-width:100%; max-height:320px; border-radius:8px; border:1px solid var(--border); display:block; margin:0 auto; }
+  .preview-name { text-align:center; margin-top:8px; font-size:12px; color:var(--muted); }
+
+  .options-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; margin-top:20px; }
+  .options-title { font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px; }
+  .options-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .opt { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; background:var(--card); border:1px solid transparent; cursor:pointer; transition:.15s; }
+  .opt:hover { border-color:var(--accent2); }
+  .opt input { accent-color:var(--accent2); width:16px; height:16px; cursor:pointer; }
+  .opt-label { font-size:13px; }
+  .opt-desc { font-size:11px; color:var(--muted); }
+
+  .btn-run {
+    display:block; width:100%; margin-top:20px; padding:16px;
+    background:linear-gradient(135deg,var(--accent2),var(--accent));
+    color:#fff; border:none; border-radius:var(--radius); font-size:16px; font-weight:700;
+    cursor:pointer; transition:.2s; letter-spacing:.03em;
+  }
+  .btn-run:hover:not(:disabled) { opacity:.88; transform:translateY(-1px); }
+  .btn-run:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+
+  .progress-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; margin-top:20px; display:none; }
+  .progress-bar-wrap { background:var(--card); border-radius:50px; height:10px; overflow:hidden; margin:10px 0; }
+  .progress-bar { height:100%; background:linear-gradient(90deg,var(--accent2),var(--accent)); width:0%; transition:width .4s; border-radius:50px; }
+  .progress-label { font-size:13px; color:var(--muted); }
+
+  .log-box { background:#0a0a18; border-radius:8px; padding:12px; margin-top:12px; max-height:160px; overflow-y:auto; font-family:Consolas,monospace; font-size:11px; }
+  .log-line { padding:1px 0; }
+  .log-info { color:#ccc; } .log-ok { color:var(--ok); } .log-warn { color:var(--warn); } .log-err { color:var(--err); }
+  .log-time { color:var(--muted); }
+
+  .results-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; margin-top:20px; display:none; }
+  .results-title { font-size:16px; font-weight:700; margin-bottom:16px; }
+
+  .download-btn {
+    display:flex; align-items:center; gap:14px; padding:16px 20px;
+    background:linear-gradient(135deg,#1a6e3c,#2fbf71); border-radius:10px;
+    color:#fff; text-decoration:none; font-weight:600; font-size:15px;
+    transition:.2s; border:none; cursor:pointer; margin-bottom:12px;
+  }
+  .download-btn:hover { opacity:.88; transform:translateY(-1px); }
+  .download-btn .dl-icon { font-size:28px; }
+  .download-btn .dl-text .dl-main { font-size:15px; font-weight:700; }
+  .download-btn .dl-text .dl-sub { font-size:12px; opacity:.8; margin-top:2px; }
+
+  .layer-list { margin-top:16px; }
+  .layer-item { display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; background:var(--card); margin-bottom:6px; font-size:13px; }
+  .layer-badge { font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; text-transform:uppercase; }
+  .badge-background { background:#1a4a6e; color:#7dc8f5; }
+  .badge-object { background:#3a2a6e; color:#b07df5; }
+  .badge-text { background:#1a4a2a; color:#7df5a0; }
+  .badge-shape { background:#6b3e1a; color:#f5a87d; }
+  .badge-original { background:#3a3a3a; color:#aaa; }
+  .layer-name { flex:1; }
+  .layer-bounds { color:var(--muted); font-size:11px; }
+  .layer-download { color:var(--accent2); text-decoration:none; font-size:11px; }
+  .layer-download:hover { text-decoration:underline; }
+
+  .text-extracts { margin-top:16px; }
+  .text-extract-title { font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px; }
+  .text-chip { display:inline-flex; align-items:center; gap:8px; background:var(--card); border-radius:6px; padding:6px 12px; margin:3px; font-size:13px; border-left:3px solid var(--ok); }
+  .text-chip .tc-color { width:14px; height:14px; border-radius:3px; border:1px solid rgba(255,255,255,.2); flex-shrink:0; }
+  .text-chip .tc-meta { font-size:10px; color:var(--muted); }
+
+  .palette-section { margin-top:16px; }
+  .palette-grid { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .swatch-card { display:flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:6px 10px; cursor:pointer; transition:.15s; }
+  .swatch-card:hover { border-color:var(--accent2); transform:translateY(-1px); }
+  .swatch-color { width:22px; height:22px; border-radius:6px; border:1px solid rgba(255,255,255,.2); flex-shrink:0; }
+  .swatch-hex { font-family:Consolas,monospace; font-size:12px; font-weight:600; }
+  .swatch-role { font-size:10px; color:var(--muted); text-transform:uppercase; }
+
+  .tokens-box { margin-top:14px; padding:12px 14px; background:var(--card); border-radius:8px; border:1px solid var(--border); font-size:12px; display:flex; flex-wrap:wrap; gap:16px; }
+  .token-item span { color:var(--accent2); font-weight:600; }
+
+  .engines-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .engine-chip { font-size:11px; padding:3px 10px; border-radius:4px; background:var(--card); border:1px solid var(--border); }
+  .engine-chip span { color:var(--accent2); }
+
+  .error-box { background:#2a0a0a; border:1px solid var(--err); border-radius:8px; padding:14px; color:var(--err); font-size:13px; margin-top:12px; display:none; }
+
+  footer { text-align:center; padding:40px 0 20px; color:var(--muted); font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo">PNG → Photoshop Layers</div>
+    <div class="sub">AI-powered image decomposition</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+    <div class="status-label" id="statusLabel">Checking backend…</div>
+    <div class="status-dot" id="statusDot"></div>
+  </div>
+</header>
+
+<main>
+  <!-- Drop Zone -->
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp,image/*" />
+    <div class="drop-icon">🖼️</div>
+    <div class="drop-title">Drop your PNG / JPEG here</div>
+    <div class="drop-sub">or click to browse · max 64 MB</div>
+  </div>
+
+  <div class="preview-area" id="previewArea">
+    <img id="previewImg" src="" alt="Preview" />
+    <div class="preview-name" id="previewName"></div>
+  </div>
+
+  <!-- Options -->
+  <div class="options-card">
+    <div class="options-title">Pipeline Options</div>
+    <div class="options-grid">
+      <label class="opt">
+        <input type="checkbox" id="optText" checked />
+        <div><div class="opt-label">🔤 Extract Text (OCR)</div><div class="opt-desc">Read & export text as editable layer</div></div>
+      </label>
+      <label class="opt">
+        <input type="checkbox" id="optObjects" checked />
+        <div><div class="opt-label">🎯 Isolate Objects</div><div class="opt-desc">Segment foreground subjects</div></div>
+      </label>
+      <label class="opt">
+        <input type="checkbox" id="optInpaint" checked />
+        <div><div class="opt-label">🎨 Inpaint Background</div><div class="opt-desc">Clean background plate</div></div>
+      </label>
+      <label class="opt">
+        <input type="checkbox" id="optDesign" checked />
+        <div><div class="opt-label">✨ Extract Design</div><div class="opt-desc">Palette, shapes & layout tokens</div></div>
+      </label>
+      <label class="opt">
+        <input type="checkbox" id="optPsd" checked />
+        <div><div class="opt-label">📄 Build PSD File</div><div class="opt-desc">Layered Photoshop document</div></div>
+      </label>
+    </div>
+  </div>
+
+  <button class="btn-run" id="runBtn" disabled>Select an image to decompose</button>
+
+  <!-- Progress -->
+  <div class="progress-card" id="progressCard">
+    <div class="progress-label" id="progressLabel">Processing…</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="log-box" id="logBox"></div>
+  </div>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <!-- Results -->
+  <div class="results-card" id="resultsCard">
+    <div class="results-title">✅ Decomposition Complete</div>
+
+    <a class="download-btn" id="psdDownloadBtn" href="#" download>
+      <div class="dl-icon">📥</div>
+      <div class="dl-text">
+        <div class="dl-main">Download Layered PSD</div>
+        <div class="dl-sub" id="psdMeta">Photoshop editable document</div>
+      </div>
+    </a>
+
+    <div class="text-extracts" id="textExtracts" style="display:none;">
+      <div class="text-extract-title">📝 Extracted Text</div>
+      <div id="textChips"></div>
+    </div>
+
+    <div class="palette-section" id="paletteSection" style="display:none;">
+      <div class="text-extract-title">🎨 Extracted Color Palette</div>
+      <div class="palette-grid" id="paletteGrid"></div>
+    </div>
+
+    <div id="tokensBox" class="tokens-box" style="display:none;"></div>
+
+    <div class="layer-list" id="layerList"></div>
+
+    <div class="engines-row" id="enginesRow"></div>
+  </div>
+</main>
+
+<footer>PNG → Photoshop Layers Decomposer &nbsp;·&nbsp; Backend: <span id="footerUrl">http://127.0.0.1:8000</span></footer>
+
+<script>
+const API = 'http://127.0.0.1:8000';
+let selectedFile = null;
+let currentResult = null;
+
+// ── DOM refs ──────────────────────────────────────────────────────────────
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const previewArea = document.getElementById('previewArea');
+const previewImg = document.getElementById('previewImg');
+const previewName = document.getElementById('previewName');
+const runBtn = document.getElementById('runBtn');
+const progressCard = document.getElementById('progressCard');
+const progressBar = document.getElementById('progressBar');
+const progressLabel = document.getElementById('progressLabel');
+const logBox = document.getElementById('logBox');
+const resultsCard = document.getElementById('resultsCard');
+const errorBox = document.getElementById('errorBox');
+const psdDownloadBtn = document.getElementById('psdDownloadBtn');
+const psdMeta = document.getElementById('psdMeta');
+const layerList = document.getElementById('layerList');
+const textExtracts = document.getElementById('textExtracts');
+const textChips = document.getElementById('textChips');
+const enginesRow = document.getElementById('enginesRow');
+const statusDot = document.getElementById('statusDot');
+const statusLabel = document.getElementById('statusLabel');
+
+// ── Health check ──────────────────────────────────────────────────────────
+async function checkHealth() {
+  try {
+    const r = await fetch(`${API}/api/v1/health`, { signal: AbortSignal.timeout(4000) });
+    if (!r.ok) throw new Error();
+    const b = await r.json();
+    statusDot.className = 'status-dot ok';
+    const engines = b.engines_available || {};
+    statusLabel.textContent = `Backend v${b.version} · OCR: ${(engines.ocr||[]).join('/')}`;
+    return true;
+  } catch {
+    statusDot.className = 'status-dot err';
+    statusLabel.textContent = 'Backend offline — start START_BACKEND.bat';
+    return false;
+  }
+}
+checkHealth();
+setInterval(checkHealth, 15000);
+
+// ── File handling ─────────────────────────────────────────────────────────
+function handleFile(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  selectedFile = file;
+  const url = URL.createObjectURL(file);
+  previewImg.src = url;
+  previewName.textContent = `${file.name} · ${(file.size/1024).toFixed(0)} KB`;
+  previewArea.style.display = 'block';
+  runBtn.disabled = false;
+  runBtn.textContent = '🚀 Decompose Image';
+  resultsCard.style.display = 'none';
+  errorBox.style.display = 'none';
+  progressCard.style.display = 'none';
+  setBar(0);
+}
+
+fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
+
+// ── Logging ───────────────────────────────────────────────────────────────
+function addLog(msg, kind='info') {
+  const t = new Date().toTimeString().slice(0,8);
+  const div = document.createElement('div');
+  div.className = `log-line log-${kind}`;
+  div.innerHTML = `<span class="log-time">${t}</span> ${escHtml(msg)}`;
+  logBox.appendChild(div);
+  logBox.scrollTop = logBox.scrollHeight;
+}
+function escHtml(s) {
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function setBar(pct, label) {
+  progressBar.style.width = Math.min(100,Math.round(pct))+'%';
+  if (label) progressLabel.textContent = label;
+}
+let creepTimer = null;
+function startCreep(from, to, label) {
+  let v = from;
+  clearInterval(creepTimer);
+  creepTimer = setInterval(() => { v += (to-v)*0.07; setBar(v, label); }, 350);
+}
+function stopCreep() { clearInterval(creepTimer); }
+
+// ── Run ───────────────────────────────────────────────────────────────────
+runBtn.addEventListener('click', async () => {
+  if (!selectedFile) return;
+  const alive = await checkHealth();
+  if (!alive) { showError('Backend is not running. Open START_BACKEND.bat first.'); return; }
+
+  runBtn.disabled = true;
+  progressCard.style.display = 'block';
+  resultsCard.style.display = 'none';
+  errorBox.style.display = 'none';
+  logBox.innerHTML = '';
+
+  const opts = {
+    extract_text: document.getElementById('optText').checked,
+    isolate_objects: document.getElementById('optObjects').checked,
+    inpaint_background: document.getElementById('optInpaint').checked,
+    extract_design: document.getElementById('optDesign').checked,
+    build_psd: document.getElementById('optPsd').checked,
+    include_original: false
+  };
+  const params = new URLSearchParams(Object.fromEntries(Object.entries(opts).map(([k,v])=>[k,v])));
+
+  addLog(`Uploading ${selectedFile.name} (${(selectedFile.size/1024).toFixed(0)} KB)…`);
+  setBar(5, 'Uploading…');
+
+  try {
+    startCreep(8, 75, 'AI processing…');
+    const resp = await fetch(`${API}/api/v1/decompose-png?${params}`, {
+      method: 'POST',
+      headers: { 'Content-Type': selectedFile.type || 'image/png' },
+      body: selectedFile
+    });
+    stopCreep();
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({ detail: resp.statusText }));
+      throw new Error(typeof err.detail === 'string' ? err.detail : JSON.stringify(err.detail));
+    }
+
+    const result = await resp.json();
+    currentResult = result;
+    setBar(100, 'Done!');
+    addLog(`Job ${result.job_id} completed in ${result.timings_ms?.total} ms`, 'ok');
+    (result.warnings||[]).forEach(w => addLog(w, 'warn'));
+    renderResults(result);
+  } catch (e) {
+    stopCreep();
+    setBar(100, 'Failed');
+    progressBar.style.background = 'var(--err)';
+    showError(e.message);
+    addLog(e.message, 'err');
+  } finally {
+    runBtn.disabled = false;
+    runBtn.textContent = '🚀 Decompose Image';
+  }
+});
+
+// ── Render results ────────────────────────────────────────────────────────
+function renderResults(result) {
+  resultsCard.style.display = 'block';
+
+  // PSD download
+  if (result.psd_url) {
+    psdDownloadBtn.href = result.psd_url;
+    psdDownloadBtn.download = `decomposed_${result.job_id.slice(0,8)}.psd`;
+    psdDownloadBtn.style.display = 'flex';
+    const layerCount = result.layers.length;
+    const textCount = result.layers.filter(l=>l.type==='text').length;
+    const objCount = result.layers.filter(l=>l.type==='object').length;
+    psdMeta.textContent = `${layerCount} layers (${textCount} text · ${objCount} objects) · ${result.width}×${result.height}px`;
+  } else {
+    psdDownloadBtn.style.display = 'none';
+  }
+
+  // Text extracts
+  const textLayers = result.layers.filter(l => l.type === 'text' && l.text);
+  if (textLayers.length) {
+    textExtracts.style.display = 'block';
+    textChips.innerHTML = '';
+    textLayers.forEach(l => {
+      const t = l.text;
+      const fontName = t.font_family || 'Poppins-Regular';
+      let displayFont = 'Poppins, sans-serif';
+      if (/playfair/i.test(fontName)) displayFont = "'Playfair Display', serif";
+      else if (/montserrat/i.test(fontName)) displayFont = "'Montserrat', sans-serif";
+      else if (/mukta/i.test(fontName)) displayFont = "'Mukta', sans-serif";
+      else if (/khand/i.test(fontName)) displayFont = "'Khand', sans-serif";
+      else if (/impact/i.test(fontName)) displayFont = 'Impact, sans-serif';
+
+      const isBlack = /black|extrabold/i.test(fontName);
+      const isBold = /bold/i.test(fontName) || isBlack;
+      const isSemiBold = /semibold/i.test(fontName);
+      const isMedium = /medium/i.test(fontName);
+      const isItalic = /italic/i.test(fontName);
+      const weight = isBlack ? '900' : (isBold ? '700' : (isSemiBold ? '600' : (isMedium ? '500' : '400')));
+      const style = isItalic ? 'italic' : 'normal';
+
+      const chip = document.createElement('div');
+      chip.className = 'text-chip';
+      chip.innerHTML = `
+        <div class="tc-color" style="background:${t.color_hex}"></div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span style="background:rgba(255,255,255,0.1);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;color:var(--accent2)">🔤 ${escHtml(fontName)}</span>
+            <span class="tc-meta">${t.font_size_px}px · ${t.color_hex} · ${t.alignment}</span>
+          </div>
+          <div style="font-family:${displayFont};font-weight:${weight};font-style:${style};font-size:16px;line-height:1.4">${escHtml(t.content || '(region only)')}</div>
+        </div>`;
+      textChips.appendChild(chip);
+    });
+  } else {
+    textExtracts.style.display = 'none';
+  }
+
+  // Palette & Design Tokens
+  const paletteSection = document.getElementById('paletteSection');
+  const paletteGrid = document.getElementById('paletteGrid');
+  const tokensBox = document.getElementById('tokensBox');
+  if (result.design && result.design.palette && result.design.palette.length) {
+    paletteSection.style.display = 'block';
+    paletteGrid.innerHTML = '';
+    result.design.palette.forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'swatch-card';
+      card.title = `Click to copy ${s.hex}`;
+      card.innerHTML = `
+        <div class="swatch-color" style="background:${s.hex}"></div>
+        <div>
+          <div class="swatch-hex">${s.hex}</div>
+          <div class="swatch-role">${s.role} · ${(s.coverage*100).toFixed(1)}%</div>
+        </div>`;
+      card.addEventListener('click', () => {
+        navigator.clipboard.writeText(s.hex);
+        card.style.borderColor = 'var(--ok)';
+        setTimeout(() => card.style.borderColor = '', 1000);
+      });
+      paletteGrid.appendChild(card);
+    });
+  } else {
+    paletteSection.style.display = 'none';
+  }
+
+  if (result.design && result.design.design_tokens) {
+    const dt = result.design.design_tokens;
+    tokensBox.style.display = 'flex';
+    const shapeCount = result.layers.filter(l=>l.type==='shape').length;
+    tokensBox.innerHTML = `
+      <div class="token-item">📐 Canvas: <span>${dt.canvas_width_px||result.width}×${dt.canvas_height_px||result.height}px</span></div>
+      <div class="token-item">⚖ Aspect: <span>${dt.aspect_ratio||(result.width/result.height).toFixed(2)}</span></div>
+      ${dt.spacing_base_px ? `<div class="token-item">📏 Spacing Base: <span>${dt.spacing_base_px}px</span></div>` : ''}
+      <div class="token-item">🔷 Shapes: <span>${shapeCount}</span></div>
+      <div class="token-item">📑 Layout Sections: <span>${result.design.section_count||0}</span></div>`;
+  } else {
+    tokensBox.style.display = 'none';
+  }
+
+  // Layer list
+  layerList.innerHTML = '';
+  result.layers.slice().reverse().forEach(layer => {
+    const div = document.createElement('div');
+    div.className = 'layer-item';
+    const b = layer.bounds;
+    const typeLabel = layer.type === 'text' ? 'text (T)' : layer.type;
+    div.innerHTML = `
+      <span class="layer-badge badge-${layer.type}">${typeLabel}</span>
+      <span class="layer-name">${escHtml(layer.name)}</span>
+      <span class="layer-bounds">${b.width}×${b.height} @ ${b.left},${b.top}</span>
+      ${layer.asset_url ? `<a class="layer-download" href="${layer.asset_url}" target="_blank">PNG ↗</a>` : ''}`;
+    layerList.appendChild(div);
+  });
+
+  // Engines
+  const e = result.engines || {};
+  enginesRow.innerHTML = ['ocr','segmentation','inpainting','design','psd'].map(k =>
+    `<div class="engine-chip">${k}: <span>${e[k]||'–'}</span></div>`
+  ).join('');
+}
+
+function showError(msg) {
+  errorBox.style.display = 'block';
+  errorBox.textContent = '⚠ ' + msg;
+}
+</script>
+</body>
+</html>
+
