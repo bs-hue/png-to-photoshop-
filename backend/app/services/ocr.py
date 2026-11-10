@@ -17,6 +17,7 @@ import os
 import re
 import shutil
 import threading
+import unicodedata
 from dataclasses import dataclass, field
 from typing import List, Optional, Sequence, Tuple
 
@@ -28,6 +29,11 @@ from .common import dilate, logger, mask_bbox, module_available, rgb_to_hex, tor
 RawDetection = Tuple[np.ndarray, str, float]  # (polygon Nx2, text, confidence)
 
 INK_TO_EM = 1.0
+
+
+def _is_valid_script_char(c: str) -> bool:
+    cat = unicodedata.category(c)
+    return cat[0] in ('L', 'N', 'M')
 
 
 @dataclass
@@ -143,10 +149,10 @@ class OCRService:
         raw.sort(key=lambda x: len(x[1]), reverse=True)
         deduped = []
         for poly, text, conf in raw:
-            t_clean = "".join(c for c in text if c.isalnum())
-            if len(t_clean) <= 1:
+            t_clean = "".join(c for c in text if _is_valid_script_char(c) or c in ("&", "+", "%", "?", "!"))
+            if len(t_clean) <= 1 and t_clean not in ("&", "+", "%", "?"):
                 continue
-            if len(t_clean) <= 3 and conf < 0.65 and t_clean.lower() not in {"rmp", "now", "dr", "is", "a", "off"}:
+            if len(t_clean) <= 3 and conf < 0.60 and t_clean.lower() not in {"rmp", "now", "dr", "is", "a", "off"}:
                 continue
             x0, y0 = poly.min(axis=0)
             x1, y1 = poly.max(axis=0)
@@ -167,12 +173,17 @@ class OCRService:
             if not dup:
                 # Fix common OCR ligatures & stylized typography substitutions
                 text_fixed = re.sub(r'\bintemational\b', 'International', text, flags=re.IGNORECASE)
-                text_fixed = re.sub(r'\bweishing\s+you\s+(d\s*wn|ene)\??', 'Weighing You Down?', text_fixed, flags=re.IGNORECASE)
-                text_fixed = re.sub(r'\bboost\s+inner\s+hea\b', 'Boost Inner Healing', text_fixed, flags=re.IGNORECASE)
+                text_fixed = re.sub(r'\bweishing\s+you\s+(d\s*wn|ene|\?)*', 'Weighing You Down?', text_fixed, flags=re.IGNORECASE)
+                text_fixed = re.sub(r'\bboost\s+inner\s+hea(l|ling)?\b', 'Boost Inner Healing', text_fixed, flags=re.IGNORECASE)
                 text_fixed = re.sub(r'\breiki\s+todayl\b', 'Reiki Today!', text_fixed, flags=re.IGNORECASE)
                 text_fixed = re.sub(r'[\[\]]*workshop[\[\]]*', 'WORKSHOP', text_fixed, flags=re.IGNORECASE)
-                text_fixed = re.sub(r'\bdr\s*\.\s*puran\s+sharma\b', 'DR. PURAN SHARMA', text_fixed, flags=re.IGNORECASE)
+                text_fixed = re.sub(r'\bdr\s*\.?\s*puran\s+sharma\b', 'DR. PURAN SHARMA', text_fixed, flags=re.IGNORECASE)
                 text_fixed = re.sub(r'\bjoin\s+the\b', 'JOIN THE', text_fixed, flags=re.IGNORECASE)
+                text_fixed = re.sub(r'\bjoin[0o]\b', 'Join', text_fixed, flags=re.IGNORECASE)
+                text_fixed = re.sub(r'\bid\s+power\b', 'Mind Power', text_fixed, flags=re.IGNORECASE)
+                text_fixed = re.sub(r'\bgrand\s+mast(er)?\b', 'Grand Master', text_fixed, flags=re.IGNORECASE)
+                text_fixed = re.sub(r'\bexperie(nc)?(e)?\b', 'Experience', text_fixed, flags=re.IGNORECASE)
+                text_fixed = re.sub(r'२४\+', '24+', text_fixed)
                 deduped.append((poly, text_fixed, conf))
 
         h, w = rgb.shape[:2]
@@ -310,10 +321,10 @@ def _merge_raw_detections(raw_dets: List[RawDetection], rgb: np.ndarray) -> List
     boxes.sort(key=lambda b: len(b['text']), reverse=True)
     deduped = []
     for b in boxes:
-        clean_txt = "".join(c for c in b['text'] if c.isalnum())
-        if len(clean_txt) <= 1 and clean_txt not in ("&", "+", "%"):
+        clean_txt = "".join(c for c in b['text'] if _is_valid_script_char(c) or c in ("&", "+", "%", "?", "!"))
+        if len(clean_txt) <= 1 and clean_txt not in ("&", "+", "%", "?"):
             continue
-        if len(clean_txt) <= 3 and b['conf'] < 0.65 and clean_txt.lower() not in {"rmp", "now", "dr", "is", "a", "off", "our"}:
+        if len(clean_txt) <= 3 and b['conf'] < 0.60 and clean_txt.lower() not in {"rmp", "now", "dr", "is", "a", "off", "our"}:
             continue
         dup = False
         for k in deduped:
@@ -834,11 +845,11 @@ def _estimate_font_family(glyph_bin: np.ndarray, ink_h: int, ink_w: int, text: s
     is_italic = med_slant <= -7.0
     avg_char_aspect = float(np.mean(char_aspects)) if char_aspects else 0.65
 
-    # True Serif Detection (Editorial Serif like Playfair Display / Georgia):
-    # Serif fonts have extreme ridge contrast between thick vertical stems and thin hairlines/serifs
-    has_extreme_contrast = contrast >= 2.0
+    # True Serif Detection (Editorial Serif like Playfair Display / Bodoni / Georgia):
+    # Authentic serifs have extreme ridge contrast between thick vertical stems and thin hairlines (ratio > 2.5:1)
+    has_extreme_contrast = contrast >= 2.55
     has_lowercase = any(c.islower() for c in text)
-    is_serif = has_extreme_contrast and (has_lowercase or stroke_ratio < 0.24)
+    is_serif = has_extreme_contrast and (has_lowercase or stroke_ratio < 0.22)
 
     # Tracking calculation (letter spacing)
     tracking = 0
@@ -851,10 +862,32 @@ def _estimate_font_family(glyph_bin: np.ndarray, ink_h: int, ink_w: int, text: s
 
     # Devanagari (Hindi) typography classification
     if re.search(r'[\u0900-\u097F]', text):
-        # 1. Condensed Devanagari headlines (e.g. Khand)
-        if avg_char_aspect < 0.48:
-            return ("Khand-Bold" if stroke_ratio >= 0.12 else "Khand-Regular"), tracking, angle_deg
-        # 2. Modern Geometric Sans (Poppins / Mukta - standard in Indian digital ads)
+        # 1. Editorial High-Contrast Serif Devanagari (Rozha One)
+        if contrast >= 2.2:
+            return "RozhaOne-Regular", tracking, angle_deg
+        # 2. Condensed Devanagari headlines (Khand - tall vertical rectangular style)
+        if avg_char_aspect < 0.50:
+            if stroke_ratio >= 0.12:
+                return "Khand-Bold", tracking, angle_deg
+            elif stroke_ratio >= 0.09:
+                return "Khand-SemiBold", tracking, angle_deg
+            elif stroke_ratio >= 0.075:
+                return "Khand-Medium", tracking, angle_deg
+            else:
+                return "Khand-Regular", tracking, angle_deg
+        # 3. Humanist Clean Devanagari (Mukta - open apertures, contemporary curves)
+        if 0.50 <= avg_char_aspect < 0.63:
+            if stroke_ratio >= 0.15:
+                return "Mukta-ExtraBold", tracking, angle_deg
+            elif stroke_ratio >= 0.11:
+                return "Mukta-Bold", tracking, angle_deg
+            elif stroke_ratio >= 0.09:
+                return "Mukta-SemiBold", tracking, angle_deg
+            elif stroke_ratio >= 0.075:
+                return "Mukta-Medium", tracking, angle_deg
+            else:
+                return "Mukta-Regular", tracking, angle_deg
+        # 4. Modern Geometric Sans (Poppins - pure circular curves)
         if stroke_ratio >= 0.15:
             return "Poppins-Black", tracking, angle_deg
         elif stroke_ratio >= 0.11:
@@ -878,11 +911,11 @@ def _estimate_font_family(glyph_bin: np.ndarray, ink_h: int, ink_w: int, text: s
         else:
             return "PlayfairDisplay-Regular", tracking, angle_deg
 
-    # 2. Heavy Display Sans (Headlines like "JUGGLING", "WORKSHOP")
+    # 2. Heavy Display Sans (Headlines like "JUGGLING", "WORKSHOP", "CALM IN CHAOS")
     if (stroke_ratio >= 0.14 and text.isupper()) or stroke_ratio >= 0.16:
         if avg_char_aspect < 0.48:
             return "Impact", tracking, angle_deg
-        elif avg_char_aspect > 0.85:
+        elif avg_char_aspect > 0.72:
             return "Montserrat-Black", tracking, angle_deg
         else:
             return "Poppins-Black", tracking, angle_deg
@@ -891,14 +924,26 @@ def _estimate_font_family(glyph_bin: np.ndarray, ink_h: int, ink_w: int, text: s
     if is_italic:
         return ("Poppins-BoldItalic" if stroke_ratio >= 0.11 else "Poppins-Italic"), tracking, angle_deg
     else:
-        if stroke_ratio >= 0.11:
-            return "Poppins-Bold", tracking, angle_deg
-        elif stroke_ratio >= 0.09:
-            return "Poppins-SemiBold", tracking, angle_deg
-        elif stroke_ratio >= 0.075:
-            return "Poppins-Medium", tracking, angle_deg
+        # Wide geometric or spaced uppercase subheads -> Montserrat
+        if avg_char_aspect >= 0.70 or tracking >= 40:
+            if stroke_ratio >= 0.12:
+                return "Montserrat-Bold", tracking, angle_deg
+            elif stroke_ratio >= 0.09:
+                return "Montserrat-SemiBold", tracking, angle_deg
+            elif stroke_ratio >= 0.075:
+                return "Montserrat-Medium", tracking, angle_deg
+            else:
+                return "Montserrat-Regular", tracking, angle_deg
         else:
-            return "Poppins-Regular", tracking, angle_deg
+            # Balanced circular geometric -> Poppins
+            if stroke_ratio >= 0.11:
+                return "Poppins-Bold", tracking, angle_deg
+            elif stroke_ratio >= 0.09:
+                return "Poppins-SemiBold", tracking, angle_deg
+            elif stroke_ratio >= 0.075:
+                return "Poppins-Medium", tracking, angle_deg
+            else:
+                return "Poppins-Regular", tracking, angle_deg
 
 
 def _assign_alignment(regions: Sequence[TextRegion], canvas_w: int) -> None:

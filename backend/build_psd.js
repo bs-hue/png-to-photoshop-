@@ -23,22 +23,46 @@ if (fs.existsSync(fontsDir)) {
     }
   };
 
+  // Poppins
   tryReg('Poppins-Regular.ttf', 'Poppins', 'normal', 'normal');
   tryReg('Poppins-Medium.ttf', 'Poppins', '500', 'normal');
   tryReg('Poppins-SemiBold.ttf', 'Poppins', '600', 'normal');
   tryReg('Poppins-Bold.ttf', 'Poppins', 'bold', 'normal');
   tryReg('Poppins-Black.ttf', 'Poppins', '900', 'normal');
+  // Playfair Display
   tryReg('PlayfairDisplay.ttf', 'Playfair Display', 'normal', 'normal');
+  tryReg('PlayfairDisplay-Bold.ttf', 'Playfair Display', 'bold', 'normal');
+  tryReg('PlayfairDisplay-Black.ttf', 'Playfair Display', '900', 'normal');
   tryReg('PlayfairDisplay-Italic.ttf', 'Playfair Display', 'normal', 'italic');
+  tryReg('PlayfairDisplay-BoldItalic.ttf', 'Playfair Display', 'bold', 'italic');
+  // Montserrat
   tryReg('Montserrat.ttf', 'Montserrat', 'normal', 'normal');
+  tryReg('Montserrat-Regular.ttf', 'Montserrat', 'normal', 'normal');
+  tryReg('Montserrat-Medium.ttf', 'Montserrat', '500', 'normal');
+  tryReg('Montserrat-SemiBold.ttf', 'Montserrat', '600', 'normal');
+  tryReg('Montserrat-Bold.ttf', 'Montserrat', 'bold', 'normal');
+  tryReg('Montserrat-Black.ttf', 'Montserrat', '900', 'normal');
   tryReg('Montserrat-Italic.ttf', 'Montserrat', 'normal', 'italic');
+  // Mukta (Devanagari)
   tryReg('Mukta-Regular.ttf', 'Mukta', 'normal', 'normal');
   tryReg('Mukta-Medium.ttf', 'Mukta', '500', 'normal');
   tryReg('Mukta-SemiBold.ttf', 'Mukta', '600', 'normal');
   tryReg('Mukta-Bold.ttf', 'Mukta', 'bold', 'normal');
   tryReg('Mukta-ExtraBold.ttf', 'Mukta', '900', 'normal');
+  // Khand (Condensed Devanagari)
   tryReg('Khand-Regular.ttf', 'Khand', 'normal', 'normal');
+  tryReg('Khand-Medium.ttf', 'Khand', '500', 'normal');
+  tryReg('Khand-SemiBold.ttf', 'Khand', '600', 'normal');
   tryReg('Khand-Bold.ttf', 'Khand', 'bold', 'normal');
+  // Rozha One (Serif Devanagari)
+  tryReg('RozhaOne-Regular.ttf', 'Rozha One', 'normal', 'normal');
+  // Modern Tech Sans
+  tryReg('Euclid Circular B Regular.ttf', 'Euclid Circular B', 'normal', 'normal');
+  tryReg('Euclid Circular B Bold.ttf', 'Euclid Circular B', 'bold', 'normal');
+  tryReg('Manrope-Regular.ttf', 'Manrope', 'normal', 'normal');
+  tryReg('Manrope-Bold.ttf', 'Manrope', 'bold', 'normal');
+  tryReg('Sora-Regular.ttf', 'Sora', 'normal', 'normal');
+  tryReg('Sora-Bold.ttf', 'Sora', 'bold', 'normal');
 }
 
 function calibrateFontMetrics(fontFamily, text, targetW, targetH, top) {
@@ -205,7 +229,30 @@ async function main() {
           canvasFont = 'Khand';
           if (isBold || isBlack) psFontName = 'Khand-Bold';
           else if (isSemiBold) psFontName = 'Khand-SemiBold';
+          else if (isMedium) psFontName = 'Khand-Medium';
           else psFontName = 'Khand-Regular';
+        } else if (/rozha/i.test(rawFont)) {
+          canvasFont = 'Rozha One';
+          psFontName = 'RozhaOne-Regular';
+        } else if (/euclid/i.test(rawFont)) {
+          canvasFont = 'Euclid Circular B';
+          if (isBold || isBlack) psFontName = 'EuclidCircularB-Bold';
+          else if (isSemiBold) psFontName = 'EuclidCircularB-SemiBold';
+          else if (isMedium) psFontName = 'EuclidCircularB-Medium';
+          else psFontName = 'EuclidCircularB-Regular';
+        } else if (/manrope/i.test(rawFont)) {
+          canvasFont = 'Manrope';
+          if (isBlack) psFontName = 'Manrope-ExtraBold';
+          else if (isBold) psFontName = 'Manrope-Bold';
+          else if (isSemiBold) psFontName = 'Manrope-SemiBold';
+          else if (isMedium) psFontName = 'Manrope-Medium';
+          else psFontName = 'Manrope-Regular';
+        } else if (/sora/i.test(rawFont)) {
+          canvasFont = 'Sora';
+          if (isBold || isBlack) psFontName = 'Sora-Bold';
+          else if (isSemiBold) psFontName = 'Sora-SemiBold';
+          else if (isMedium) psFontName = 'Sora-Medium';
+          else psFontName = 'Sora-Regular';
         } else if (/impact|bebas/i.test(rawFont)) {
           canvasFont = 'Impact';
           psFontName = 'Impact';
@@ -246,10 +293,17 @@ async function main() {
           transform = [cos, sin, -sin, cos, anchorX, baselineY];
         }
 
-        // Render pixel canvas preview: guarantees text is immediately visible in Photoshop
-        const bw = Math.max(1, Math.round(b.width));
-        const bh = Math.max(1, Math.round(b.height));
-        const textCanvas = createCanvas(bw, bh);
+        // Render pixel canvas preview: generous padding guarantees ascenders, descenders, and Hindi matras are NEVER clipped
+        const padX = Math.max(10, Math.round(fontSize * 0.45));
+        const padY = Math.max(8, Math.round(fontSize * 0.40));
+        const canvasLeft = Math.max(0, Math.round(b.left - padX));
+        const canvasTop = Math.max(0, Math.round(b.top - padY));
+        const canvasRight = Math.min(width, Math.round(b.left + b.width + padX));
+        const canvasBottom = Math.min(height, Math.round(b.top + b.height + padY));
+        const cw = Math.max(1, canvasRight - canvasLeft);
+        const ch = Math.max(1, canvasBottom - canvasTop);
+
+        const textCanvas = createCanvas(cw, ch);
         const tctx = textCanvas.getContext('2d');
         const weightStr = isBlack ? '900 ' : (isBold ? 'bold ' : (isSemiBold ? '600 ' : (isMedium ? '500 ' : '')));
         const styleStr = isItalic ? 'italic ' : '';
@@ -257,17 +311,17 @@ async function main() {
         tctx.fillStyle = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
         tctx.textAlign = align === 'center' ? 'center' : (align === 'right' ? 'right' : 'left');
         tctx.textBaseline = 'alphabetic';
-        const drawX = align === 'center' ? bw / 2 : (align === 'right' ? bw : 0);
-        const drawY = Math.min(bh - 2, Math.max(Math.round(fontSize * 0.78), baselineY - b.top));
+        const drawX = align === 'center' ? Math.round(b.left + b.width / 2 - canvasLeft) : (align === 'right' ? Math.round(b.left + b.width - canvasLeft) : Math.round(b.left - canvasLeft));
+        const drawY = Math.round(baselineY - canvasTop);
         tctx.fillText(content, drawX, drawY);
 
         return {
           name: info.name,
           canvas: textCanvas,
-          top: b.top,
-          left: b.left,
-          bottom: b.top + bh,
-          right: b.left + bw,
+          top: canvasTop,
+          left: canvasLeft,
+          bottom: canvasBottom,
+          right: canvasRight,
           visible: info.visible !== false,
           text: {
             text: content,
