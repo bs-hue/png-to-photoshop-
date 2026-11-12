@@ -38,14 +38,14 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 WORKDIR /app
 
 # Install Node dependencies for ag-psd and canvas
-COPY package.json package-lock.json ./
+COPY backend/package.json backend/package-lock.json ./
 RUN npm ci
 
 # Install PyTorch CPU first (saves ~3GB compared to default CUDA wheels)
 RUN pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
 # Install Python requirements
-COPY requirements.txt ./
+COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Pre-download and cache EasyOCR models (Hindi + English) so container starts instantly
@@ -56,7 +56,7 @@ RUN mkdir -p /app/app/models && \
     curl -fL -o /app/app/models/lama_fp32.onnx https://huggingface.co/Carve/LaMa-ONNX/resolve/main/lama_fp32.onnx
 
 # Copy application source code & fonts
-COPY . .
+COPY backend/ .
 
 # Install bundled TrueType fonts system-wide for Pango / node-canvas typography rendering
 RUN mkdir -p /usr/share/fonts/truetype/custom && \

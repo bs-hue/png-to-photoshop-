@@ -57,10 +57,8 @@ Coolify gives you two deployment options:
 #### Option A: Dockerfile (Default Coolify Settings — Easiest)
 - **Build Pack**: `Dockerfile`
 - **Base Directory**: `/`
-- **Dockerfile Location**: `/Dockerfile`
+- **Dockerfile Location**: `/Dockerfile` (or `/backend/Dockerfile` — both build from repository root `/`)
 - **Ports Exposes**: `8000`
-
-*(If you point **Dockerfile Location** to `/backend/Dockerfile` instead, make sure **Base Directory** is set to `/backend` so Docker can find `package.json` and `requirements.txt`.)*
 
 #### Option B: Docker Compose
 - **Build Pack**: `Docker Compose`
