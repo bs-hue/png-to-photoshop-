@@ -54,16 +54,18 @@ Ensure your code (including `backend/app/models/` weights and `backend/fonts/` T
 ### Step 3: Configure Build Settings
 Coolify gives you two deployment options:
 
-#### Option A: Docker Compose (Recommended)
+#### Option A: Dockerfile (Default Coolify Settings — Easiest)
+- **Build Pack**: `Dockerfile`
+- **Base Directory**: `/`
+- **Dockerfile Location**: `/Dockerfile`
+- **Ports Exposes**: `8000`
+
+*(If you point **Dockerfile Location** to `/backend/Dockerfile` instead, make sure **Base Directory** is set to `/backend` so Docker can find `package.json` and `requirements.txt`.)*
+
+#### Option B: Docker Compose
 - **Build Pack**: `Docker Compose`
 - **Docker Compose Location**: `/docker-compose.yml`
 - Coolify will automatically read port `8000` and mount the persistent volume for outputs.
-
-#### Option B: Dockerfile
-- **Build Pack**: `Dockerfile`
-- **Base Directory**: `/backend`
-- **Dockerfile Path**: `Dockerfile`
-- **Ports Exposes**: `8000`
 
 ### Step 4: Environment Variables in Coolify
 Under the **Environment Variables** tab in Coolify, configure the following:

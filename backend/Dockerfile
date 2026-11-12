@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libjpeg-dev \
     libgif-dev \
     librsvg2-dev \
+    fontconfig \
     fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
@@ -56,6 +57,11 @@ RUN mkdir -p /app/app/models && \
 
 # Copy application source code & fonts
 COPY . .
+
+# Install bundled TrueType fonts system-wide for Pango / node-canvas typography rendering
+RUN mkdir -p /usr/share/fonts/truetype/custom && \
+    cp -f /app/fonts/*.ttf /usr/share/fonts/truetype/custom/ && \
+    fc-cache -fv
 
 # Ensure outputs directory exists
 RUN mkdir -p /app/outputs

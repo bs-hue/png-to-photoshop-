@@ -3,7 +3,7 @@ version: '3.8'
 services:
   decomposer-backend:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
     container_name: png-layer-decomposer
     restart: unless-stopped
